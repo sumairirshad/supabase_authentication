@@ -24,26 +24,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
     })
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
-
-      if (event === 'SIGNED_IN') {
-        toast.success('You have been signed in successfully.')
-      } else if (event === 'SIGNED_OUT') {
-         toast.success('You have been signed out successfully.')
-      }
     })
 
     return () => subscription.unsubscribe()
@@ -82,7 +74,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signInWithProvider = async (provider: 'google' | 'facebook' | 'twitter') => {
-    // const { data, error };
     if(provider == 'facebook')
     {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -95,12 +86,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return {error} ;
     }
     
-     const { data, error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`,
-        },
-      })
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
+    })
 
     if (error) {
      toast.error('Authentication Faile')
