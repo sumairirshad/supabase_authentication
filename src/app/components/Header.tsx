@@ -6,6 +6,7 @@ import { Button } from './ui/button'
 import { useUser } from '../context/UserContext'
 import { supabase } from '../lib/supabase'
 import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 
 export default function Header() {
     const { setUserId } = useUser()
@@ -14,6 +15,7 @@ export default function Header() {
     const logout = async () => {
         await supabase.auth.signOut()
         setUserId(null)
+        toast.success('You have been logged out');
         router.push('/')
     }
     
@@ -38,10 +40,8 @@ export default function Header() {
           </button>
         </Link>
 
-        <Button onClick={logout}>
-          <button className="cursor-pointer bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-1.5 rounded transition duration-200">
+        <Button onClick={logout} className="cursor-pointer bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-1.5 rounded transition duration-200">
             Logout
-          </button>
         </Button>
       </div>
     </header>
