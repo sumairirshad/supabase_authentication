@@ -21,6 +21,7 @@ import { AccountLinkingModal } from './AccountLinkingModal'
 import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
 import { SocialLogin } from './SocialLogin'
+import { useUser } from '../context/UserContext'
 
 const signInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -45,6 +46,7 @@ export function AuthForm({ onForgotPassword }: AuthFormProps) {
   const [conflictEmail, setConflictEmail] = useState<string | null>(null)
   const [conflictProvider, setConflictProvider] = useState<string | null>(null)
   const [showConflictModal, setShowConflictModal] = useState(false)
+  const {setUserId} = useUser();
 
   const form = useForm<SignUpData | SignInData>({
     resolver: zodResolver(isSignUp ? signUpSchema : signInSchema),
@@ -95,6 +97,9 @@ const onSubmit = async (data: SignUpData | SignInData) => {
           return
         }
 
+        if (loginData?.user?.id) {
+          setUserId(loginData.user.id)
+        }
         toast.success("Logged in successfully!")
         window.location.href = '/dashboard'
       }
