@@ -29,20 +29,20 @@ export function SocialLogin({ onAccountConflict }: SocialLoginProps) {
   }
 
   const socialProviders = [
-    // {
-    //   name: 'google',
-    //   label: 'Google',
-    //   icon: FaGoogle,
-    //   color: 'text-red-500',
-    //   provider: 'google' as const,
-    // },
     {
-      name: 'facebook',
-      label: 'Facebook',
-      icon: FaFacebook,
-      color: 'text-blue-600',
-      provider: 'facebook' as const,
+      name: 'google',
+      label: 'Google',
+      icon: FaGoogle,
+      color: 'text-red-500',
+      provider: 'google' as const,
     },
+    // {
+    //   name: 'facebook',
+    //   label: 'Facebook',
+    //   icon: FaFacebook,
+    //   color: 'text-blue-600',
+    //   provider: 'facebook' as const,
+    // },
     {
       name: 'twitter',
       label: 'Twitter',
