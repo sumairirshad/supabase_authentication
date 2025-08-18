@@ -1,7 +1,11 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Input } from '../components/ui/input'
+import Header from '../components/Header'
+import { useUser } from '../context/UserContext'
+import { supabase } from '../lib/supabase'
+import { useCredits } from '../context/CreditsContext'
 
 export default function Dashboard() {
   const [file, setFile] = useState<File | null>(null)
@@ -9,6 +13,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const dropRef = useRef<HTMLDivElement>(null)
+  const {userId} = useUser();
+  const { deductCredits, credits } = useCredits()
 
   const handleFileSelect = (selectedFile: File | null) => {
     if (!selectedFile) return
@@ -64,6 +70,8 @@ export default function Dashboard() {
             ? data.result
             : data.result?.text ?? JSON.stringify(data.result, null, 2)
         setTranscript(out)
+
+        await deductCredits(10)
       } else {
         setError(data.error || 'Something went wrong')
       }
@@ -75,7 +83,9 @@ export default function Dashboard() {
   }
 
   return (
+    <> <Header />
     <div className="min-h-screen bg-gray-900 text-white p-6">
+     
       <div className="max-w-4xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold mb-4">🎙 Whisper Transcriber</h1>
         <p className="mb-4 text-gray-300">
@@ -129,7 +139,6 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Samples */}
         <div className="mb-6">
           <strong className="block mb-2">🎧 Try Sample Files:</strong>
           <div className="flex flex-wrap gap-4 items-center">
@@ -176,5 +185,6 @@ export default function Dashboard() {
         )}
       </div>
     </div>
+    </>
   )
 }
