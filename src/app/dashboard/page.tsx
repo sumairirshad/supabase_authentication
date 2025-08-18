@@ -1,10 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef} from 'react'
 import { Input } from '../components/ui/input'
 import Header from '../components/Header'
-import { useUser } from '../context/UserContext'
-import { supabase } from '../lib/supabase'
 import { useCredits } from '../context/CreditsContext'
 
 export default function Dashboard() {
@@ -13,7 +11,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const dropRef = useRef<HTMLDivElement>(null)
-  const {userId} = useUser();
   const { deductCredits, credits } = useCredits()
 
   const handleFileSelect = (selectedFile: File | null) => {

@@ -1,14 +1,10 @@
 "use client"
-import { useAuth } from "./context/AuthContext";
-import { useLocation } from 'wouter'
 import { useState } from "react";
 import { AuthForm } from "./components/AuthForm";
-import { SocialLogin } from "./components/SocialLogin";
 import { AccountLinkingModal } from "./components/AccountLinkingModal";
 
 
 export default function Home() {
-  const { user } = useAuth()
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [accountConflict, setAccountConflict] = useState<{
     provider: string

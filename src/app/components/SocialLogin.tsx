@@ -1,16 +1,12 @@
 import { useState } from 'react'
 import { useAuth } from '@/app/context/AuthContext'
 import { Button } from '@/app/components/ui/button'
-import { FaGoogle, FaFacebook, FaTwitter } from 'react-icons/fa'
+import { FaGoogle,  FaTwitter } from 'react-icons/fa'
 import { supabase } from '../lib/supabase'
 
-interface SocialLoginProps {
-  onAccountConflict: (provider: string, email: string) => void
-}
 
-export function SocialLogin({ onAccountConflict }: SocialLoginProps) {
+export function SocialLogin() {
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null)
-  const { signInWithProvider } = useAuth()
 
   const handleSocialLogin = async (provider: 'google' | 'facebook' | 'twitter') => {
     setLoadingProvider(provider)

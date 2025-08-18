@@ -44,7 +44,6 @@ export default function SuccessPage() {
           setError('No credits were added.')
         }
       } catch (err: any) {
-        console.error(err)
         setError(err.message || 'Could not verify payment.')
       } finally {
         setLoading(false)

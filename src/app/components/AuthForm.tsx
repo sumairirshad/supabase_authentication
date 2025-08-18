@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, Mail, User, Lock, Check } from 'lucide-react'
+import { Eye, EyeOff, Mail,  Lock } from 'lucide-react'
 import { useAuth } from '@/app/context/AuthContext'
 import { Button } from '@/app/components/ui/button'
 import { Input } from '@/app/components/ui/input'
@@ -42,7 +42,6 @@ export function AuthForm({ onForgotPassword }: AuthFormProps) {
   const [isSignUp, setIsSignUp] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const { signIn, signUp } = useAuth()
   const [conflictEmail, setConflictEmail] = useState<string | null>(null)
   const [conflictProvider, setConflictProvider] = useState<string | null>(null)
   const [showConflictModal, setShowConflictModal] = useState(false)
@@ -268,11 +267,11 @@ return (
       </div>
 
       <SocialLogin
-        onAccountConflict={(provider, email) => {
-          setConflictProvider(provider)
-          setConflictEmail(email)
-          setShowConflictModal(true)
-        }}
+        // onAccountConflict={(provider, email) => {
+        //   setConflictProvider(provider)
+        //   setConflictEmail(email)
+        //   setShowConflictModal(true)
+        // }}
       />
     </div>
 
