@@ -7,10 +7,13 @@ import { useUser } from '../context/UserContext'
 import { supabase } from '../lib/supabase'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
+import { useCredits } from '../context/CreditsContext'
 
 export default function Header() {
     const { setUserId } = useUser()
     const router = useRouter()
+    const { credits, loading } = useCredits()
+
 
     const logout = async () => {
         await supabase.auth.signOut()
@@ -31,13 +34,13 @@ export default function Header() {
             width={24}
             height={24}
           />
-          <span className="text-sm font-medium">Your Credits: 200</span>
+          <span className="text-sm font-medium">
+            {loading ? 'Loading...' : `Your Credits: ${credits}`}
+          </span>
         </div>
 
-        <Link href="/buy-credits">
-          <button className="bg-yellow-500 hover:bg-yellow-600 text-black text-sm font-medium px-4 py-1.5 rounded transition duration-200">
-            Buy Credits
-          </button>
+        <Link href="/pricing" className="cursor-pointer bg-yellow-500 hover:bg-yellow-600 text-black text-sm font-medium px-4 py-1.5 rounded transition duration-200">
+          Buy Credits
         </Link>
 
         <Button onClick={logout} className="cursor-pointer bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-1.5 rounded transition duration-200">
