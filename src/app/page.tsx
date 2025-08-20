@@ -11,9 +11,9 @@ export default function Home() {
     email: string
   } | null>(null)
 
-  const handleAccountConflict = (provider: string, email: string) => {
-    setAccountConflict({ provider, email })
-  }
+  // const handleAccountConflict = (provider: string, email: string) => {
+  //   setAccountConflict({ provider, email })
+  // }
 
   const closeAccountConflict = () => {
     setAccountConflict(null)

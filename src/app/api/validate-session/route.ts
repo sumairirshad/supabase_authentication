@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const { data: existing, error: checkErr } = await supabase
+    const { data: existing } = await supabase
       .from('used_stripe_sessions')
       .select('session_id')
       .eq('session_id', sessionId)
@@ -54,8 +54,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ credits })
-  } catch (err: any) {
-    console.error('Validation Error:', err.message)
+  } catch (err: unknown) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

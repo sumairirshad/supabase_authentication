@@ -11,7 +11,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const dropRef = useRef<HTMLDivElement>(null)
-  const { deductCredits, credits } = useCredits()
+  const { deductCredits } = useCredits()
 
   const handleFileSelect = (selectedFile: File | null) => {
     if (!selectedFile) return
@@ -72,8 +72,12 @@ export default function Dashboard() {
       } else {
         setError(data.error || 'Something went wrong')
       }
-    } catch (err: any) {
-      setError(err.message || String(err))
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError('An unexpected error occurred')
+      }
     } finally {
       setLoading(false)
     }

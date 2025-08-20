@@ -21,31 +21,31 @@ export const CreditsProvider = ({ children }: { children: React.ReactNode }) => 
 
 
   useEffect(() => {
+    const initializeCredits = async (uid: string) => {
+      const { data, error } = await supabase
+        .from('credits_ledger')
+        .select('*')
+        .eq('userId', uid)
+
+      if (error) {
+        console.error('Fetch ledger error:', error)
+        return
+      }
+
+      if (data.length === 0) {
+        await supabase.from('credits_ledger').insert({
+          userId: uid,
+          credits: 100,
+        })
+      }
+
+      fetchCredits()
+    }
+
     if (userId) {
       initializeCredits(userId)
     }
   }, [userId])
-
-  const initializeCredits = async (uid: string) => {
-    const { data, error } = await supabase
-      .from('credits_ledger')
-      .select('*')
-      .eq('userId', uid)
-
-    if (error) {
-      console.error('Fetch ledger error:', error)
-      return
-    }
-
-    if (data.length === 0) {
-      await supabase.from('credits_ledger').insert({
-        userId: uid,
-        credits: 100
-      })
-    }
-
-    fetchCredits()
-  }
 
   const fetchCredits = async () => {
     if (!userId) return

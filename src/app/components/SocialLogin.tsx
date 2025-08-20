@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useAuth } from '@/app/context/AuthContext'
 import { Button } from '@/app/components/ui/button'
 import { FaGoogle,  FaTwitter } from 'react-icons/fa'
 import { supabase } from '../lib/supabase'
@@ -11,7 +10,7 @@ export function SocialLogin() {
   const handleSocialLogin = async (provider: 'google' | 'facebook' | 'twitter') => {
     setLoadingProvider(provider)
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: { redirectTo: `${window.location.origin}/dashboard`,
         scopes: provider === 'facebook' ? 'email,public_profile' : undefined },

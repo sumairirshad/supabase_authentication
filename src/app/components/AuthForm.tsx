@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff, Mail,  Lock } from 'lucide-react'
-import { useAuth } from '@/app/context/AuthContext'
 import { Button } from '@/app/components/ui/button'
 import { Input } from '@/app/components/ui/input'
 import { Checkbox } from '@/app/components/ui/checkbox'
@@ -47,8 +46,8 @@ export function AuthForm({ onForgotPassword }: AuthFormProps) {
   const [showConflictModal, setShowConflictModal] = useState(false)
   const {setUserId} = useUser();
 
-  const form = useForm<SignUpData | SignInData>({
-    resolver: zodResolver(isSignUp ? signUpSchema : signInSchema),
+  const form = useForm<SignInData>({
+    resolver: zodResolver(signInSchema),
     defaultValues: {
       email: '',
       password: '',
@@ -56,14 +55,13 @@ export function AuthForm({ onForgotPassword }: AuthFormProps) {
     },
   })
 
-const onSubmit = async (data: SignUpData | SignInData) => {
+const onSubmit = async  (data: SignInData) => {
   setIsLoading(true)
 
-  const email = (data as any).email
-  const password = (data as any).password
+  const { email, password } = data
   try {
     if (isSignUp) {
-      const { error, data: signUpData } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password
       })
@@ -103,8 +101,8 @@ const onSubmit = async (data: SignUpData | SignInData) => {
         window.location.href = '/dashboard'
       }
     }
-  } catch (err: any) {
-    const errorMessage = err?.message || ''
+  }  catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Something went wrong'
 
     if (
       errorMessage.includes('email_exists') ||

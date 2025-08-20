@@ -39,11 +39,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
 
     return () => subscription.unsubscribe()
-  }, [toast])
+  }, [])
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -86,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return {error} ;
     }
     
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
         redirectTo: `${window.location.origin}/dashboard`,
@@ -125,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const linkAccount = async (provider: 'google' | 'facebook' | 'twitter') => {
-    const { data, error } = await supabase.auth.linkIdentity({
+    const { error } = await supabase.auth.linkIdentity({
       provider,
     })
 
