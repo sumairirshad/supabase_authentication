@@ -15,47 +15,44 @@ export default function SuccessContent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [sessionId, setSessionId] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!userId) return;
-
-    const sessionId = searchParams.get('session_id');
-
-    if (!sessionId || !userId) {
-      setError('Invalid session or user.');
-      setLoading(false);
-      return;
+    const id = searchParams.get('session_id')
+    if (id) {
+      setSessionId(id)
+    } else {
+      setError('Missing session ID')
+      setLoading(false)
     }
+  }, [searchParams])
+
+  useEffect(() => {
+    if (!userId || !sessionId) return
 
     const verifyPayment = async () => {
       try {
-        const res = await fetch(`/api/validate-session?session_id=${sessionId}`);
-        const data = await res.json();
+        const res = await fetch(`/api/validate-session?session_id=${sessionId}`)
+        const data = await res.json()
 
-        if (!res.ok) {
-          throw new Error(data.error || 'Something went wrong.');
-        }
+        if (!res.ok) throw new Error(data.error || 'Something went wrong.')
 
         if (data.credits > 0) {
-          await addCreditsAfterPurchase(userId, data.credits);
-          setSuccess(true);
-          setTimeout(() => router.push('/dashboard'), 4000);
+          await addCreditsAfterPurchase(userId, data.credits)
+          setSuccess(true)
+          setTimeout(() => router.push('/dashboard'), 4000)
         } else {
-          setError('No credits were added.');
+          setError('No credits were added.')
         }
       } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('Could not verify payment.');
-        }
+        setError(err instanceof Error ? err.message : 'Could not verify payment.')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    verifyPayment();
-  }, [userId, addCreditsAfterPurchase, router, searchParams]);
+    verifyPayment()
+  }, [userId, sessionId])
 
   if (loading) {
     return (
