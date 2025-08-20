@@ -59,7 +59,13 @@ export default function Dashboard() {
         body: formData,
       })
 
-      const data = await res.json()
+      let data = null;
+
+      try {
+        data = await res.json();
+      } catch (err) {
+        throw new Error('Invalid JSON response from server');
+      }
 
       if (res.ok) {
         const out =

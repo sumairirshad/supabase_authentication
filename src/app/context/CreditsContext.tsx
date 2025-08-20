@@ -22,21 +22,16 @@ export const CreditsProvider = ({ children }: { children: React.ReactNode }) => 
 
   useEffect(() => {
     const initializeCredits = async (uid: string) => {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('credits_ledger')
-        .select('*')
-        .eq('userId', uid)
+        .upsert(
+          { userId: uid, credits: 100 },
+          { onConflict: 'userId' }
+        )
 
       if (error) {
-        console.error('Fetch ledger error:', error)
+        console.error('Upsert error:', error)
         return
-      }
-
-      if (data.length === 0) {
-        await supabase.from('credits_ledger').insert({
-          userId: uid,
-          credits: 100,
-        })
       }
 
       fetchCredits()
