@@ -6,7 +6,8 @@ import { supabase } from '../lib/supabase'
 
 export function SocialLogin() {
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null)
-
+ 
+  
   const handleSocialLogin = async (provider: 'google' | 'facebook' | 'twitter') => {
     setLoadingProvider(provider)
     try {
