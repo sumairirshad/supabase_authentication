@@ -8,7 +8,7 @@ export default function Sidebar() {
 
   const links = [
     { name: 'Dashboard', href: '/dashboard', icon: '📊' },
-    { name: 'Users', href: '/invite-user', icon: '👥' },
+    { name: 'Manage Users', href: '/invite-user', icon: '👥' },
   ]
 
   return (
