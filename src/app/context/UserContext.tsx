@@ -47,7 +47,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (user) {
         setUserId(user.id)
-        setName(user.user_metadata.full_name || 'Anonymous')
+        setName(user.user_metadata.full_name ||  user.email?.split('@')[0] || 'Anonymous')
         setAvatar(user.user_metadata.avatar_url || '/default-avatar.png')
         setProvider(user.app_metadata?.provider || 'email')
         setEmail(user.email || '')
@@ -61,7 +61,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       if (user) {
         console.log(user)
         setUserId(user.id)
-        setName(user.user_metadata.full_name || 'Anonymous')
+        setName(user.user_metadata.full_name ||  user.email?.split('@')[0] || 'Anonymous')
         setAvatar(user.user_metadata.avatar_url || '/assets/icons8-user-50.png')
         setProvider(user.app_metadata?.provider || 'email')
         setEmail(user.email || '')
