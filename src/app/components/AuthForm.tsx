@@ -22,6 +22,7 @@ import toast from 'react-hot-toast'
 import { SocialLogin } from './SocialLogin'
 import { useUser } from '../context/UserContext'
 import { useProvider } from '../context/ProviderContext'
+import Image from 'next/image'
 
 const signInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -137,17 +138,33 @@ const onSubmit = async  (data: SignInData) => {
 
 return (
   <div className="mx-auto md:w-[850px] rounded-2xl overflow-hidden shadow-xl border border-zinc-200 bg-white flex flex-col md:flex-row min-h-[600px]">
-    <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex flex-col justify-center items-center p-10 w-full md:w-1/2">
-      <div className="text-4xl font-extrabold mb-4">
-        {isSignUp ? 'Join Us Today!' : 'Welcome Back!'}
-      </div>
-      <p className="text-lg text-indigo-100 text-center mb-6 px-4">
-        {isSignUp
-          ? 'Sign up to unlock exclusive features and content.'
-          : 'Login to continue exploring.'}
-      </p>
-      <Lock className="h-24 w-24 text-white/30" />
+ 
+  <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex flex-col justify-center items-center p-10 w-full md:w-1/2">
+
+    <div className="flex flex-col items-center mb-6">
+      <Image
+        src="https://img.icons8.com/fluency/48/supabase.png"
+        alt="Supabase Logo"
+        className="h-10 mb-2"
+        width={40}
+        height={20}
+      />
+      <h2 className="text-2xl font-semibold text-white/90">Supabase Authentication</h2>
     </div>
+
+    <div className="text-4xl font-extrabold mb-4">
+      {isSignUp ? 'Join Us Today!' : 'Welcome Back!'}
+    </div>
+
+    <p className="text-lg text-indigo-100 text-center mb-6 px-4">
+      {isSignUp
+        ? 'Sign up to unlock exclusive features and content.'
+        : 'Login to continue exploring.'}
+    </p>
+
+    <Lock className="h-24 w-24 text-white/30" />
+  </div>
+
 
     <div className="flex-1 bg-white p-8 md:p-12 flex flex-col justify-between">
       <div>
