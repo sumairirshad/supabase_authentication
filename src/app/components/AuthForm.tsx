@@ -21,6 +21,7 @@ import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
 import { SocialLogin } from './SocialLogin'
 import { useUser } from '../context/UserContext'
+import { useProvider } from '../context/ProviderContext'
 
 const signInSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -31,7 +32,6 @@ const signInSchema = z.object({
 const signUpSchema = signInSchema
 
 type SignInData = z.infer<typeof signInSchema>
-type SignUpData = z.infer<typeof signUpSchema>
 
 interface AuthFormProps {
   onForgotPassword: () => void
@@ -105,6 +105,7 @@ const onSubmit = async  (data: SignInData) => {
               email: user.email || ''
             })
         }
+        localStorage.setItem('auth_provider', 'email')
         toast.success("Logged in successfully!")
         window.location.href = '/dashboard'
       }
