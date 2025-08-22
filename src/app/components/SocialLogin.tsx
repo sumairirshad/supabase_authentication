@@ -3,10 +3,8 @@ import { Button } from '@/app/components/ui/button'
 import { FaGoogle,  FaTwitter } from 'react-icons/fa'
 import { supabase } from '../lib/supabase'
 
-
 export function SocialLogin() {
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null)
- 
   
   const handleSocialLogin = async (provider: 'google' | 'facebook' | 'twitter') => {
     setLoadingProvider(provider)
@@ -69,7 +67,11 @@ export function SocialLogin() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleSocialLogin(social.provider)}
+                onClick={ () => {
+                      handleSocialLogin(social.provider)
+                      localStorage.setItem('auth_provider', social.provider)
+                  }
+                }
                 disabled={isLoading}
                 className="cursor-pointer h-12 w-12 p-0 rounded-full flex items-center justify-center border border-gray-300 dark:border-zinc-700 hover:bg-black dark:hover:bg-zinc-800 transition-all"
               >
