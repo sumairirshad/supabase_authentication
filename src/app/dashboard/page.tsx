@@ -5,6 +5,7 @@ import { Input } from '../components/ui/input'
 import Header from '../components/Header'
 import { useCredits } from '../context/CreditsContext'
 import Sidebar from '../components/Sidebar'
+import AuthGuard from '../components/AuthGuard'
 
 export default function Dashboard() {
   const [file, setFile] = useState<File | null>(null)
@@ -91,6 +92,7 @@ export default function Dashboard() {
   }
 
   return (
+    <AuthGuard>
     <div className="flex min-h-screen bg-gray-950 text-white">
       <Sidebar />
 
@@ -166,5 +168,6 @@ export default function Dashboard() {
         </main>
       </div>
     </div>
+    </AuthGuard>
   )
 }
