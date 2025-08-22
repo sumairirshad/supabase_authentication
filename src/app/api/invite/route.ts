@@ -8,12 +8,23 @@ export async function POST(req: Request) {
   const encodedEmail = encodeEmail(email)
   const redirectTo = `${process.env.NEXT_PUBLIC_SITE_URL}/invite-status?token=${encodedEmail}&role=${roleId}`
 
-  const { error } = await supabaseClient.auth.admin.inviteUserByEmail(email, {
+  const { error: inviteError, data: inviteData} = await supabaseClient.auth.admin.inviteUserByEmail(email, {
     redirectTo,
   })
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (inviteError) {
+    return NextResponse.json({ error: inviteError.message }, { status: 500 })
+  }
+
+  const { error: insertError } = await supabaseClient.from('user_roles').insert({
+    email,
+    user_id: inviteData?.user?.id,
+    role_id: roleId,
+    status: 'pending',
+  })
+
+  if (insertError) {
+    return NextResponse.json({ error: insertError.message }, { status: 500 })
   }
 
   return NextResponse.json({ message: 'Invitation sent' })
