@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -56,6 +56,16 @@ export function AuthForm({ onForgotPassword }: AuthFormProps) {
     },
   })
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const rememberedEmail = localStorage.getItem('remembered_email')
+      if (rememberedEmail) {
+        form.setValue('email', rememberedEmail)
+        form.setValue('rememberMe', true)
+      }
+    }
+  }, [form])
+
 const onSubmit = async  (data: SignInData) => {
   setIsLoading(true)
 
@@ -107,6 +117,15 @@ const onSubmit = async  (data: SignInData) => {
             })
         }
         localStorage.setItem('auth_provider', 'email')
+        const rememberMe = form.getValues('rememberMe')
+        const email = form.getValues('email')
+
+        if (rememberMe) {
+          localStorage.setItem('remembered_email', email)
+        } else {
+          localStorage.removeItem('remembered_email')
+        }
+
         toast.success("Logged in successfully!")
         window.location.href = '/dashboard'
       }
@@ -134,6 +153,29 @@ const onSubmit = async  (data: SignInData) => {
   const toggleMode = () => {
     setIsSignUp((prev) => !prev)
     form.reset()
+  }
+
+  const handleForgotPassword = async () => {
+    const email = form.getValues('email')
+
+    if (!email) {
+      toast.error('Please enter your email to reset password.')
+      return
+    }
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      })
+
+      if (error) {
+        toast.error(error.message)
+      } else {
+        toast.success('Password reset email sent!')
+      }
+    } catch (err) {
+      toast.error('Something went wrong!')
+    }
   }
 
 return (
@@ -252,7 +294,7 @@ return (
                 />
                 <button
                   type="button"
-                  onClick={onForgotPassword}
+                  onClick={handleForgotPassword}
                   className="cursor-pointer text-indigo-500 hover:underline"
                 >
                   Forgot password?
