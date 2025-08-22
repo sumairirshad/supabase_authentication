@@ -44,7 +44,7 @@ export function AuthForm({ onForgotPassword }: AuthFormProps) {
   const [conflictEmail, setConflictEmail] = useState<string | null>(null)
   const [conflictProvider, setConflictProvider] = useState<string | null>(null)
   const [showConflictModal, setShowConflictModal] = useState(false)
-  const {setUserId} = useUser();
+  const {setUserId, setProfile} = useUser();
 
   const form = useForm<SignInData>({
     resolver: zodResolver(signInSchema),
@@ -95,7 +95,15 @@ const onSubmit = async  (data: SignInData) => {
         }
 
         if (loginData?.user?.id) {
-          setUserId(loginData.user.id)
+           const user = loginData.user
+            setUserId(user.id)
+
+            setProfile({
+              name: user.user_metadata.full_name ||  user.email?.split('@')[0] || 'Anonymous',
+              avatar: user.user_metadata.avatar_url || '/assets/icons8-user-50.png',
+              provider: user.app_metadata?.provider || 'email',
+              email: user.email || ''
+            })
         }
         toast.success("Logged in successfully!")
         window.location.href = '/dashboard'
