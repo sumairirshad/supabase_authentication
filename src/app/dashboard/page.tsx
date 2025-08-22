@@ -146,40 +146,6 @@ export default function Dashboard() {
           </button>
         </div>
 
-        <div className="mb-6">
-          <strong className="block mb-2">🎧 Try Sample Files:</strong>
-          <div className="flex flex-wrap gap-4 items-center">
-            <audio controls className="w-48" src="/samples/sample1.wav" />
-            <audio controls className="w-48" src="/samples/sample2.wav" />
-            <button
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm"
-              onClick={() =>
-                fetch('/samples/sample1.wav')
-                  .then((r) => r.blob())
-                  .then((b) => {
-                    const f = new File([b], 'sample1.wav')
-                    handleFileSelect(f)
-                  })
-              }
-            >
-              Use Sample 1
-            </button>
-            <button
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm"
-              onClick={() =>
-                fetch('/samples/sample2.wav')
-                  .then((r) => r.blob())
-                  .then((b) => {
-                    const f = new File([b], 'sample2.wav')
-                    handleFileSelect(f)
-                  })
-              }
-            >
-              Use Sample 2
-            </button>
-          </div>
-        </div>
-
         {error && <p className="text-red-400 mb-4">{error}</p>}
 
         {transcript && (
