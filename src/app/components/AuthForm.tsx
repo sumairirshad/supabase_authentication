@@ -21,7 +21,6 @@ import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
 import { SocialLogin } from './SocialLogin'
 import { useUser } from '../context/UserContext'
-import { useProvider } from '../context/ProviderContext'
 import Image from 'next/image'
 
 const signInSchema = z.object({
@@ -46,6 +45,8 @@ export function AuthForm({ onForgotPassword }: AuthFormProps) {
   const [conflictProvider, setConflictProvider] = useState<string | null>(null)
   const [showConflictModal, setShowConflictModal] = useState(false)
   const {setUserId, setProfile} = useUser();
+  const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false)
+  const [isSending, setSending] = useState(false)
 
   const form = useForm<SignInData>({
     resolver: zodResolver(signInSchema),
@@ -116,6 +117,7 @@ const onSubmit = async  (data: SignInData) => {
               email: user.email || ''
             })
         }
+
         localStorage.setItem('auth_provider', 'email')
         const rememberMe = form.getValues('rememberMe')
         const email = form.getValues('email')
@@ -152,17 +154,18 @@ const onSubmit = async  (data: SignInData) => {
 
   const toggleMode = () => {
     setIsSignUp((prev) => !prev)
+    setShowForgotPasswordForm(false)
     form.reset()
   }
 
-  const handleForgotPassword = async () => {
+  const handleSendResetLink = async () => {
     const email = form.getValues('email')
 
     if (!email) {
       toast.error('Please enter your email to reset password.')
       return
     }
-
+    setSending(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
@@ -172,8 +175,11 @@ const onSubmit = async  (data: SignInData) => {
         toast.error(error.message)
       } else {
         toast.success('Password reset email sent!')
+        setShowForgotPasswordForm(false)
+        setSending(false);
       }
-    } catch (err) {
+    }
+    catch (err) {
       toast.error('Something went wrong!')
     }
   }
@@ -211,11 +217,17 @@ return (
     <div className="flex-1 bg-white p-8 md:p-12 flex flex-col justify-between">
       <div>
         <h2 className="text-2xl font-bold text-zinc-800 mb-2">
-          {isSignUp ? 'Create Account' : 'Sign In'}
+          {showForgotPasswordForm ? 'Reset Password' : isSignUp ? 'Create Account' : 'Sign In'}
         </h2>
+         {showForgotPasswordForm && (
+            <p className="text-sm text-zinc-600 mb-4">
+              Enter your email address below. We’ll send you a link to reset your password.
+            </p>
+         )}
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          {!showForgotPasswordForm ? (
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             {/* Email */}
             <FormField
               control={form.control}
@@ -294,7 +306,7 @@ return (
                 />
                 <button
                   type="button"
-                  onClick={handleForgotPassword}
+                  onClick={() => setShowForgotPasswordForm(true)}
                   className="cursor-pointer text-indigo-500 hover:underline"
                 >
                   Forgot password?
@@ -318,6 +330,42 @@ return (
               )}
             </Button>
           </form>
+          ):(
+              <div className="p-4 w-full">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="email" placeholder="you@example.com" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-between items-center mt-4">
+                <Button
+                  type="button"
+                  onClick={handleSendResetLink}
+                  className="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-semibold"
+                  disabled={isSending}
+                >
+                  {isSending ? 'Sending...' : 'Send Reset Link'}
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPasswordForm(false)}
+                  className="cursor-pointer text-sm text-zinc-500 hover:underline"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+          
         </Form>
 
         <p className="text-sm text-center text-zinc-600 mt-4">
@@ -342,14 +390,14 @@ return (
     </div>
 
     {/* Account Conflict Modal */}
-    {showConflictModal && conflictEmail && conflictProvider && (
-      <AccountLinkingModal
-        open={showConflictModal}
-        onClose={() => setShowConflictModal(false)}
-        provider={conflictProvider}
-        email={conflictEmail}
-      />
-    )}
+      {showConflictModal && conflictEmail && conflictProvider && (
+        <AccountLinkingModal
+          open={showConflictModal}
+          onClose={() => setShowConflictModal(false)}
+          provider={conflictProvider}
+          email={conflictEmail}
+        />
+      )}
   </div>
 )
 
