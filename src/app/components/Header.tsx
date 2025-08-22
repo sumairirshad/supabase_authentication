@@ -23,9 +23,8 @@ export default function Header() {
     }
     
   return (
-    <header className="flex justify-between items-center px-6 py-4 bg-gray-800 text-white shadow">
-      <h1 className="text-xl font-semibold">🎙 Whisper Transcriber</h1>
-
+    <header className="flex justify-between items-center px-6 py-4 bg-gray-900 text-white shadow-2xl">
+      <div className="flex-1" />
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 bg-gray-700 px-3 py-1.5 rounded-full">
           <Image
