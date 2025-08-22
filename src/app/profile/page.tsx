@@ -4,11 +4,15 @@ import { useUser } from '@/app/context/UserContext'
 import Image from 'next/image'
 import Header from '../components/Header'
 import Sidebar from '../components/Sidebar'
+import AuthGuard from '../components/AuthGuard'
+import { useProvider } from '../context/ProviderContext'
 
 export default function ProfilePage() {
   const { name, avatar, provider, email } = useUser()
-
+  const {currentProvider} = useProvider();
+  
  return (
+    <AuthGuard>
     <div className="flex min-h-screen bg-gray-950 text-white">
       <Sidebar />
 
@@ -28,7 +32,7 @@ export default function ProfilePage() {
               <div>
                 <h1 className="text-3xl font-bold mb-1">{name}</h1>
                 <p className="text-gray-400">
-                  Logged in via <span className="font-semibold capitalize">{provider}</span>
+                  Logged in via <span className="font-semibold capitalize">{currentProvider}</span>
                 </p>
               </div>
             </div>
@@ -41,7 +45,7 @@ export default function ProfilePage() {
                   <p className="text-white font-medium">{email}</p>
                 </div>
                 <div>
-                  <p className="text-gray-400">Login Method</p>
+                  <p className="text-gray-400">Account Created From</p>
                   <p className="text-white font-medium capitalize">{provider}</p>
                 </div>
               </div>
@@ -50,5 +54,6 @@ export default function ProfilePage() {
         </main>
       </div>
     </div>
+    </AuthGuard>
   )
 }
