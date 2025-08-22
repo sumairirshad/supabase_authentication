@@ -21,9 +21,7 @@ export default function InviteStatusPage() {
 
       if (user && user.email === email) {
         await supabase.from('user_roles').update({
-          roleId: roleId,
           status: 'confirmed',
-          email: email
         }).eq('user_id', user.id)
 
         router.push(`/set-password?email=${encodedEmail}`)
