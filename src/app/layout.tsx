@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext'
 import { Toaster } from "react-hot-toast";
 import { UserProvider } from "./context/UserContext";
 import { CreditsProvider } from "./context/CreditsContext";
+import { ProviderProvider } from "./context/ProviderContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,9 @@ export default function RootLayout({
           <AuthProvider>
             <UserProvider>
                 <CreditsProvider>
-                  {children}
+                  <ProviderProvider>
+                    {children}
+                  </ProviderProvider>
                 </CreditsProvider>
               </UserProvider>
           </AuthProvider>
