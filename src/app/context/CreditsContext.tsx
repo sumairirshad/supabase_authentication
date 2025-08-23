@@ -41,14 +41,29 @@ export const CreditsProvider = ({ children }: { children: React.ReactNode }) => 
   }
 
   useEffect(() => {
+    if(!userId) return;
+    
     const initializeCredits = async (uid: string) => {
-      const { error } = await supabase
+      const { data, error: selectError } = await supabase
         .from('credits_ledger')
-        .upsert({ userId: uid, credits: 100 }, { onConflict: 'userId' })
+        .select('id')
+        .eq('userId', uid)
+        .single()
 
-      if (error) {
-        console.error('Upsert error:', error)
+      if (selectError && selectError.code !== 'PGRST116') {
+        console.error('Select error:', selectError)
         return
+      }
+
+      if (!data) {
+        const { error: insertError } = await supabase
+          .from('credits_ledger')
+          .insert({ userId: uid, credits: 100 })
+
+        if (insertError) {
+          console.error('Insert error:', insertError)
+          return
+        }
       }
 
       fetchCredits()
@@ -62,12 +77,22 @@ export const CreditsProvider = ({ children }: { children: React.ReactNode }) => 
   const deductCredits = async (amount: number) => {
     if (!userId) return
 
-    await supabase.from('credits_ledger').insert({
-      userId,
-      credits: -amount
-    })
+    try {
+      const { error } = await supabase.from('credits_ledger').insert({
+        userId,
+        credits: -amount,
+        created_at: new Date()
+      })
 
-    fetchCredits()
+      if (error) {
+        console.error('Failed to deduct credits:', error)
+        return
+      }
+
+      fetchCredits()
+    } catch (err: any) {
+      console.error('Unexpected error deducting credits:', err)
+    }
   }
 
     const addCreditsAfterPurchase = async (userId:string ,amount: number) => {
