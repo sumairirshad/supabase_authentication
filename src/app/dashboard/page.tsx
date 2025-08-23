@@ -6,6 +6,7 @@ import Header from '../components/Header'
 import { useCredits } from '../context/CreditsContext'
 import Sidebar from '../components/Sidebar'
 import AuthGuard from '../components/AuthGuard'
+import toast from 'react-hot-toast'
 
 export default function Dashboard() {
   const [file, setFile] = useState<File | null>(null)
@@ -13,7 +14,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const dropRef = useRef<HTMLDivElement>(null)
-  const { deductCredits } = useCredits()
+  const { deductCredits, checkAvailableCredits } = useCredits()
 
   const handleFileSelect = (selectedFile: File | null) => {
     if (!selectedFile) return
@@ -47,6 +48,13 @@ export default function Dashboard() {
     if (file.size > 50 * 1024 * 1024) {
       setError('File size should be less than or equal to 50MB.')
       return
+    }
+
+    const availableCredits = await checkAvailableCredits();
+    if (availableCredits <= 0) {
+      toast.error('You do not have enough credits');
+      window.location.href = '/pricing'
+      return;
     }
 
     setLoading(true)
