@@ -10,6 +10,7 @@ interface CreditsContextType {
   fetchCredits: () => Promise<void>
   loading: boolean,
   addCreditsAfterPurchase: (userId:string ,credits: number) => Promise<void> 
+  checkAvailableCredits:() => Promise<number>
 }
 
 const CreditsContext = createContext<CreditsContextType | undefined>(undefined)
@@ -48,22 +49,15 @@ export const CreditsProvider = ({ children }: { children: React.ReactNode }) => 
         .from('credits_ledger')
         .select('id')
         .eq('userId', uid)
-        .single()
 
       if (selectError && selectError.code !== 'PGRST116') {
-        console.error('Select error:', selectError)
         return
       }
 
       if (!data) {
-        const { error: insertError } = await supabase
+        await supabase
           .from('credits_ledger')
           .insert({ userId: uid, credits: 100 })
-
-        if (insertError) {
-          console.error('Insert error:', insertError)
-          return
-        }
       }
 
       fetchCredits()
@@ -106,8 +100,29 @@ export const CreditsProvider = ({ children }: { children: React.ReactNode }) => 
         fetchCredits()
     }
 
+  const checkAvailableCredits = async (): Promise<number> => {
+    if (!userId) return 0
+
+    setLoading(true)
+
+    const { data, error } = await supabase
+      .from('credits_ledger')
+      .select('credits')
+      .eq('userId', userId)
+
+    setLoading(false)
+
+    if (error) {
+      console.error('Error fetching credits:', error)
+      return 0
+    }
+
+    const totalCredits = data?.reduce((sum, entry) => sum + entry.credits, 0) || 0
+    return totalCredits
+  }
+
   return (
-    <CreditsContext.Provider value={{ credits, deductCredits, fetchCredits, loading, addCreditsAfterPurchase }}>
+    <CreditsContext.Provider value={{ credits, deductCredits, fetchCredits, loading, addCreditsAfterPurchase,checkAvailableCredits }}>
       {children}
     </CreditsContext.Provider>
   )
