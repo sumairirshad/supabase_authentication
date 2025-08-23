@@ -40,52 +40,37 @@ export default function Dashboard() {
 
   const handleUpload = async () => {
     if (!file) {
-      setError('Please select an audio file first.')
+      setError('Please select a file first.')
+      return
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      setError('File size should be less than or equal to 50MB.')
       return
     }
 
     setLoading(true)
-    setTranscript('')
     setError('')
+    setTranscript('')
 
     try {
       const formData = new FormData()
       formData.append('file', file)
-      formData.append('language', 'nl')
-      formData.append('format', 'text')
-      formData.append('prompt', '')
-      formData.append('model', 'gpt-4o-mini-transcribe')
 
-      const res = await fetch('/api/transcribe', {
+      const response = await fetch('/api/transcribe', {
         method: 'POST',
         body: formData,
       })
 
-      let data = null;
-
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error('Invalid JSON response from server');
+      if (!response.ok) {
+        throw new Error('Failed to transcribe the audio.')
       }
 
-      if (res.ok) {
-        const out =
-          typeof data.result === 'string'
-            ? data.result
-            : data.result?.text ?? JSON.stringify(data.result, null, 2)
-        setTranscript(out)
-
-        await deductCredits(10)
-      } else {
-        setError(data.error || 'Something went wrong')
-      }
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('An unexpected error occurred')
-      }
+      const data = await response.json()
+      setTranscript(data.transcript)
+      deductCredits(10) 
+    } catch (err: any) {
+      setError(err.message || 'An error occurred.')
     } finally {
       setLoading(false)
     }
@@ -100,10 +85,10 @@ export default function Dashboard() {
         <Header />
 
         <main className="flex-1 flex justify-center items-start p-6">
-          <div className="w-full max-w-4xl bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div className="w-full bg-gray-800 p-6 rounded-lg shadow-lg">
             <h1 className="text-2xl font-bold mb-4">🎙 Whisper Transcriber</h1>
             <p className="mb-4 text-gray-300">
-              Default language: <strong>Dutch (nl)</strong>. Supported formats:
+              Supported formats:
               <code> .wav</code>, <code>.mp3</code>, <code>.m4a</code>,{' '}
               <code>.ogg</code> (≤50MB)
             </p>
