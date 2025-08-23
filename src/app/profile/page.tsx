@@ -23,7 +23,10 @@ export default function ProfilePage() {
           <div className="w-full bg-gray-800 rounded-lg p-10 shadow-lg">
             <div className="flex items-center gap-6 mb-8">
               <Image
-                src={avatar || '/assets/icons8-user-50.png'}
+                src={
+                  avatar 
+                    || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=0D8ABC&color=fff&size=100`
+                }
                 alt="User Avatar"
                 width={100}
                 height={100}

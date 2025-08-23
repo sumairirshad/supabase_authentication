@@ -107,7 +107,7 @@ const onSubmit = async  (data: SignInData) => {
 
             setProfile({
               name: user.user_metadata.full_name ||  user.email?.split('@')[0] || 'Anonymous',
-              avatar: user.user_metadata.avatar_url || '/assets/icons8-user-50.png',
+              avatar: user.user_metadata.avatar_url || null,
               provider: user.app_metadata?.provider || 'email',
               email: user.email || ''
             })

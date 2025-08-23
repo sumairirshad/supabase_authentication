@@ -64,7 +64,10 @@ export default function Header() {
           className="flex items-center gap-2 cursor-pointer focus:outline-none"
         >
           <Image
-            src={avatar || '/assets/icons8-user-50.png'}
+           src={
+              avatar 
+                || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=0D8ABC&color=fff&size=100`
+            }
             alt="User avatar"
             width={36}
             height={36}
