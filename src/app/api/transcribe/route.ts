@@ -5,6 +5,7 @@ import path from 'path'
 import OpenAI from 'openai'
 import type { Fields, Files } from 'formidable'
 import { Readable } from 'stream'
+import { IncomingMessage } from 'http'
 
 // Disable default body parser
 export const config = {
@@ -29,11 +30,11 @@ export async function POST(req: NextRequest) {
   const buffer = await req.arrayBuffer()
 
     const readableStream = Readable.from(Buffer.from(buffer))
-    const fakeReq: any = Object.assign(readableStream, {
-        headers: Object.fromEntries(req.headers),
-        method: req.method,
-        url: '',
-    })
+    const fakeReq = Object.assign(readableStream, {
+      headers: Object.fromEntries(req.headers),
+      method: req.method,
+      url: '',
+    }) as IncomingMessage
 
   const stream = new ReadableStream({
     start(controller) {
@@ -74,7 +75,7 @@ export async function POST(req: NextRequest) {
 
     try {
       fs.unlinkSync(file.filepath)
-    } catch (_) {}
+    } catch {}
 
     return new Response(JSON.stringify({ result: transcription }), {
       status: 200,

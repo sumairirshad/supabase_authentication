@@ -29,15 +29,10 @@ const signInSchema = z.object({
   rememberMe: z.boolean().optional(),
 })
 
-const signUpSchema = signInSchema
 
 type SignInData = z.infer<typeof signInSchema>
 
-interface AuthFormProps {
-  onForgotPassword: () => void
-}
-
-export function AuthForm({ onForgotPassword }: AuthFormProps) {
+export function AuthForm() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -179,7 +174,7 @@ const onSubmit = async  (data: SignInData) => {
         setSending(false);
       }
     }
-    catch (err) {
+    catch {
       toast.error('Something went wrong!')
     }
   }

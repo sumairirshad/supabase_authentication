@@ -65,7 +65,7 @@ export default function Dashboard() {
 
       try {
         data = await res.json();
-      } catch (err) {
+      } catch {
         throw new Error('Invalid JSON response from server');
       }
 

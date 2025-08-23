@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import { supabase } from '../lib/supabase'
 import Sidebar from '../components/Sidebar'
+import { PostgrestError } from '@supabase/supabase-js'
 
 type UserRoleRow = {
   email: string
@@ -30,7 +31,7 @@ export default function UserManagement() {
             email,
             status,
             roles (type)
-        `) as { data: UserRoleRow[]; error: any }
+        `) as { data: UserRoleRow[]; error: PostgrestError | null }
 
         if (error) {
             console.error('Error loading users:', error.message)

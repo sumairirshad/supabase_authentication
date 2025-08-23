@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ credits })
-  } catch (err: unknown) {
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

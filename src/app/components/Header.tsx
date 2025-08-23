@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Button } from './ui/button'
 import { useUser } from '../context/UserContext'
 import { supabase } from '../lib/supabase'
 import { useRouter } from 'next/navigation'
@@ -64,7 +63,7 @@ export default function Header() {
           onClick={() => setOpen(!open)}
           className="flex items-center gap-2 cursor-pointer focus:outline-none"
         >
-          <img
+          <Image
             src={avatar || '/assets/icons8-user-50.png'}
             alt="User avatar"
             width={36}

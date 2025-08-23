@@ -28,7 +28,7 @@ export default function SuccessContent() {
   }, [searchParams])
 
   useEffect(() => {
-    if (!userId || !sessionId) return
+    if (!userId || !sessionId) return;
 
     const verifyPayment = async () => {
       try {
@@ -52,7 +52,7 @@ export default function SuccessContent() {
     }
 
     verifyPayment()
-  }, [userId, sessionId])
+  }, [userId, sessionId, addCreditsAfterPurchase, router])
 
   if (loading) {
     return (

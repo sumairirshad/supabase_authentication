@@ -20,14 +20,31 @@ export const CreditsProvider = ({ children }: { children: React.ReactNode }) => 
   const [loading, setLoading] = useState<boolean>(true)
 
 
+  const fetchCredits = async () => {
+    if (!userId) return
+    setLoading(true)
+
+    const { data, error } = await supabase
+      .from('credits_ledger')
+      .select('credits')
+      .eq('userId', userId)
+
+    if (error) {
+      console.error('Error fetching credits:', error)
+      setLoading(false)
+      return
+    }
+
+    const total = data.reduce((sum, record) => sum + record.credits, 0)
+    setCredits(total)
+    setLoading(false)
+  }
+
   useEffect(() => {
     const initializeCredits = async (uid: string) => {
       const { error } = await supabase
         .from('credits_ledger')
-        .upsert(
-          { userId: uid, credits: 100 },
-          { onConflict: 'userId' }
-        )
+        .upsert({ userId: uid, credits: 100 }, { onConflict: 'userId' })
 
       if (error) {
         console.error('Upsert error:', error)
@@ -41,26 +58,6 @@ export const CreditsProvider = ({ children }: { children: React.ReactNode }) => 
       initializeCredits(userId)
     }
   }, [userId])
-
-  const fetchCredits = async () => {
-    if (!userId) return
-    setLoading(true)
-
-    const { data, error } = await supabase
-        .from('credits_ledger')
-        .select('credits')
-        .eq('userId', userId)
-
-    if (error) {
-        console.error('Error fetching credits:', error)
-        setLoading(false)
-        return
-    }
-
-    const total = data.reduce((sum, record) => sum + record.credits, 0)
-    setCredits(total)
-    setLoading(false)
-}
 
   const deductCredits = async (amount: number) => {
     if (!userId) return

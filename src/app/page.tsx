@@ -5,7 +5,6 @@ import { AccountLinkingModal } from "./components/AccountLinkingModal";
 
 
 export default function Home() {
-  const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [accountConflict, setAccountConflict] = useState<{
     provider: string
     email: string
@@ -22,7 +21,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center py-12 px-6 ">
       <div className="w-fullspace-y-6 bg-white p-8 rounded-xl borderx">
-        <AuthForm onForgotPassword={() => setShowForgotPassword(true)} />
+        <AuthForm />
       </div>
 
       <AccountLinkingModal
