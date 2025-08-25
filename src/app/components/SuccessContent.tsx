@@ -65,7 +65,7 @@ export default function SuccessContent() {
     )
   }
 
-  if (error) {
+  if (error && !success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-red-100">
         <div className="bg-white p-8 rounded-lg shadow text-center">
