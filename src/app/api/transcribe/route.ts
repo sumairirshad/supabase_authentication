@@ -24,8 +24,11 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json({ transcript: response.text })
-  } catch (err: any) {
-    console.error(err)
-    return NextResponse.json({ error: 'Transcription failed.' }, { status: 500 })
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error(err.message)
+    } else {
+      console.error('An unknown error occurred', err)
+    }
   }
 }

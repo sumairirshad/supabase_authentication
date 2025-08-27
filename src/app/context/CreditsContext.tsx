@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { supabase } from '@/app/lib/supabase'
 import { useUser } from './UserContext'
 
@@ -8,9 +8,9 @@ interface CreditsContextType {
   credits: number
   deductCredits: (amount: number) => Promise<void>
   fetchCredits: () => Promise<void>
-  loading: boolean,
-  addCreditsAfterPurchase: (userId:string ,credits: number) => Promise<void> 
-  checkAvailableCredits:() => Promise<number>
+  loading: boolean
+  addCreditsAfterPurchase: (userId: string, credits: number) => Promise<void>
+  checkAvailableCredits: () => Promise<number>
 }
 
 const CreditsContext = createContext<CreditsContextType | undefined>(undefined)
@@ -20,8 +20,7 @@ export const CreditsProvider = ({ children }: { children: React.ReactNode }) => 
   const { userId } = useUser()
   const [loading, setLoading] = useState<boolean>(true)
 
-
-  const fetchCredits = async () => {
+  const fetchCredits = useCallback(async () => {
     if (!userId) return
     setLoading(true)
 
@@ -39,34 +38,28 @@ export const CreditsProvider = ({ children }: { children: React.ReactNode }) => 
     const total = data.reduce((sum, record) => sum + record.credits, 0)
     setCredits(total)
     setLoading(false)
-  }
+  }, [userId])
 
   useEffect(() => {
-    if(!userId) return;
-    
+    if (!userId) return
+
     const initializeCredits = async (uid: string) => {
       const { data, error: selectError } = await supabase
         .from('credits_ledger')
         .select('id')
         .eq('userId', uid)
 
-      if (selectError && selectError.code !== 'PGRST116') {
-        return
-      }
+      if (selectError && selectError.code !== 'PGRST116') return
 
-      if (!data) {
-        await supabase
-          .from('credits_ledger')
-          .insert({ userId: uid, credits: 100 })
+      if (!data || data.length === 0) {
+        await supabase.from('credits_ledger').insert({ userId: uid, credits: 100 })
       }
 
       fetchCredits()
     }
 
-    if (userId) {
-      initializeCredits(userId)
-    }
-  }, [userId])
+    initializeCredits(userId)
+  }, [userId, fetchCredits])
 
   const deductCredits = async (amount: number) => {
     if (!userId) return
@@ -75,7 +68,7 @@ export const CreditsProvider = ({ children }: { children: React.ReactNode }) => 
       const { error } = await supabase.from('credits_ledger').insert({
         userId,
         credits: -amount,
-        created_at: new Date()
+        created_at: new Date(),
       })
 
       if (error) {
@@ -84,21 +77,25 @@ export const CreditsProvider = ({ children }: { children: React.ReactNode }) => 
       }
 
       fetchCredits()
-    } catch (err: any) {
-      console.error('Unexpected error deducting credits:', err)
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error('Unexpected error deducting credits:', err.message)
+      } else {
+        console.error('Unexpected non-error thrown:', err)
+      }
     }
   }
 
-    const addCreditsAfterPurchase = async (userId:string ,amount: number) => {
-        if (!userId) return
+  const addCreditsAfterPurchase = async (userId: string, amount: number) => {
+    if (!userId) return
 
-        await supabase.from('credits_ledger').insert({
-            userId,
-            credits: amount
-        })
+    await supabase.from('credits_ledger').insert({
+      userId,
+      credits: amount,
+    })
 
-        fetchCredits()
-    }
+    fetchCredits()
+  }
 
   const checkAvailableCredits = async (): Promise<number> => {
     if (!userId) return 0
@@ -122,7 +119,16 @@ export const CreditsProvider = ({ children }: { children: React.ReactNode }) => 
   }
 
   return (
-    <CreditsContext.Provider value={{ credits, deductCredits, fetchCredits, loading, addCreditsAfterPurchase,checkAvailableCredits }}>
+    <CreditsContext.Provider
+      value={{
+        credits,
+        deductCredits,
+        fetchCredits,
+        loading,
+        addCreditsAfterPurchase,
+        checkAvailableCredits,
+      }}
+    >
       {children}
     </CreditsContext.Provider>
   )

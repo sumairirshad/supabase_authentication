@@ -77,8 +77,12 @@ export default function Dashboard() {
       const data = await response.json()
       setTranscript(data.transcript)
       deductCredits(10) 
-    } catch (err: any) {
-      setError(err.message || 'An error occurred.')
+    }  catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error(err.message)
+    } else {
+      console.error('An unknown error occurred', err)
+    }
     } finally {
       setLoading(false)
     }
